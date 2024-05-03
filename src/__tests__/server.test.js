@@ -1,22 +1,23 @@
 'use strict';
 
-// Import only the necessary modules from the models/index.js file
-const { Food, Entertainment } = require('../models/index.js');
-
-// Import necessary modules for testing
+require('dotenv').config();
 const supertest = require('supertest');
 const { app } = require('../server.js');
+const exp = require('constants');
 
-// Define a mockRequest for testing
 const mockRequest = supertest(app);
 
-describe('API Server', () => {
+const { db } = require('../models/index.js');
 
-  beforeEach(async () => {
-    // Clean up the database before each test
-    await Food.destroy({ where: {} });
-    await Entertainment.destroy({ where: {} });
-  });
+beforeAll(async () => {
+  await db.sync();
+});
+
+afterAll(async () => {
+  await db.drop();
+});
+
+describe('API Server', () => {
 
   it('should respond with a 404 on an invalid route', async () => {
     let response = await mockRequest.get('/no-thing');
@@ -28,41 +29,51 @@ describe('API Server', () => {
     expect(response.status).toBe(500);
   });
 
-  it('can add a food record', async () => {
-    let data = { 'name': 'Pizza', 'type': 'Italian', 'price': 10.99 };
-    let response = await mockRequest.post('/food').send(data);
+  it('can add a record', async () => {
+    let data = { "firstName": "Rosie", "lastName": "Sullivan", age: 9 };
+    let response = await (mockRequest.post('/customers').send(data));
     expect(response.status).toBe(201);
     expect(response.body.id).toBeDefined();
-    expect(response.body.name).toBe('Pizza');
-    expect(response.body.type).toBe('Italian');
-    expect(response.body.price).toBe(10.99);
+    expect(response.body.firstName).toBe('Rosie');
+    expect(response.body.lastName).toBe('Sullivan');
+    expect(response.body.age).toBe(9);
   });
 
-  it('can add an entertainment record', async () => {
-    let data = { 'name': 'Concert', 'type': 'Music', 'location': 'City Hall' };
-    let response = await mockRequest.post('/entertainment').send(data);
-    expect(response.status).toBe(201);
-    expect(response.body.id).toBeDefined();
-    expect(response.body.name).toBe('Concert');
-    expect(response.body.type).toBe('Music');
-    expect(response.body.location).toBe('City Hall');
-  });
-
-  it('can get a list of food records', async () => {
-    // Add some food records first
-    await Food.bulkCreate([
-      { 'name': 'Pizza', 'type': 'Italian', 'price': 10.99 },
-      { 'name': 'Burger', 'type': 'American', 'price': 8.99 },
-    ]);
-
-    let response = await mockRequest.get('/food');
+  it('can get a list of records', async () => {
+    let response = await mockRequest.get('/customers');
     expect(response.status).toBe(200);
     expect(response.body).toBeInstanceOf(Array);
-    expect(response.body.length).toBe(2); // Assuming 2 food records were added
-    expect(response.body[0]).toHaveProperty('name');
-    // Add more specific checks for the returned data if needed
+    expect(response.body.length).toBeGreaterThan(0);
+    expect(response.body[0]).toHaveProperty('firstName');
+    // expect a list of customers in the body...
   });
 
-  // Add more tests for other endpoints...
+  it('can get a record', async () => {
+    let response = await mockRequest.get('/customers/1');
+    expect(response.status).toBe(200);
+    expect(response.body).toBeInstanceOf(Object);
+    expect(response.body).toHaveProperty('firstName');
+    expect(response.body.firstName).toBeDefined();
+    // expect the right record in the body...
+  });
+
+  it('can update a record', async () => {
+    let data = {};
+    let response = await mockRequest.put('/customers/1', data);
+    expect(response.status).toBe(200);
+    // expect the right record in the body...
+  });
+
+  it('can delete a record', async () => {
+    // Add a record first
+    let data = { "firstName": "Rosie", "lastName": "Sullivan", age: 9 };
+    let response = await (mockRequest.post('/customers').send(data));
+    let id = response.body.id;
+
+    // Delete that record
+    let deleteResponse = await mockRequest.delete(`/customers/${id}`);
+    expect(deleteResponse.status).toBe(204);
+    expect(deleteResponse.text).toBe('');
+  });
 
 });
