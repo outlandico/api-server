@@ -1,20 +1,13 @@
-require('dotenv').config();
 
-const DATABASE_URL = process.env.DATABASE_URL;
+const DATABASE_URL = process.env.NODE_ENV === 'test' ? 'sqlite:memory' : process.env.DATABASE_URL;
 
-const { Sequelize, DataTypes } = require('sequelize');
-const sequelize = new Sequelize(DATABASE_URL, { logging: false });
+const { Sequelize } = require('sequelize');
 
-const FoodModel = require('./food');
-const EntertainmentModel = require('./entertainment');
+let sequelize = new Sequelize(DATABASE_URL, { logging: false });
 
-const Food = FoodModel(sequelize, DataTypes);
-const Entertainment = EntertainmentModel(sequelize, DataTypes);
 
-const db = sequelize; // Add back the db variable
 
 module.exports = {
-  db, // Export the db variable
-  Food,
-  Entertainment,
+  db: sequelize,
+
 };

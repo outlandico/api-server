@@ -8,10 +8,7 @@
     "test-watch": "jest --watchAll --coverage",
     "start": "node index.js"
   },
-  "keywords": [
-    "Adam",
-    "Jimenez"
-  ],
+  "keywords": [],
   "author": "Adam Jimenez",
   "license": "MIT",
   "dependencies": {
