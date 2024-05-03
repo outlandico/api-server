@@ -1,7 +1,7 @@
 'use strict';
 
 // Import only the necessary modules from the models/index.js file
-const { Food, Entertainment } = require('../models/index');
+const { Food, Entertainment } = require('../models/index.js');
 
 // Import necessary modules for testing
 const supertest = require('supertest');
