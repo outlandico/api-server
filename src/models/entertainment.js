@@ -1,6 +1,6 @@
 'use strict';
 
-const Food = (sequelize, DataTypes) => sequelize.define('Food', {
+const Entertainment = (sequelize, DataTypes) => sequelize.define('Entertainment', {
   firstName: {
     type: DataTypes.STRING,
     allowNull: false,
@@ -15,4 +15,4 @@ const Food = (sequelize, DataTypes) => sequelize.define('Food', {
   },
 });
 
-module.exports = Food;
+module.exports = Entertainment;

@@ -1,51 +1,55 @@
+'use strict';
+
 const express = require('express');
 const router = express.Router();
-const { Food } = require('../models/index');
+const { Food } = require('../models/index.js');
 
-// RESTful route definitions
-router.get('/', getFood); // Removed redundant '/food' since it's already defined in the app.use()
-router.get('/:id', getOneFood); // Updated route to use dynamic parameter
-router.post('/', createFood); // Removed redundant '/food' since it's already defined in the app.use()
-router.put('/:id', updateFood); // Updated route to use dynamic parameter
-router.delete('/:id', deleteFood); // Updated route to use dynamic parameter
+// RESTful route definitions for "food"
+router.get('/food', getFood);
+router.get('/food/:id', getOneFood);
+router.post('/food', createFood);
+router.put('/food/:id', updateFood);
+router.delete('/food/:id', deleteFood);
 
-// ROUTE HANDLERS
+// Route handlers for "food" CRUD operations
 async function getFood(request, response) {
-  try {
-    let foods = await Food.findAll();
-    let data = { count: foods.length, results: foods };
-    response.status(200).json(data);
-  } catch (error) {
-    response.status(500).json({ error: error.message });
-  }
+  let data = await Food.findAll();
+  response.status(200).json(data);
 }
 
 async function getOneFood(request, response) {
-  try {
-    let id = request.params.id;
-    let data = await Food.findOne({ where: { id: id } });
-    response.status(200).json(data);
-  } catch (error) {
-    response.status(500).json({ error: error.message });
-  }
+  let id = request.params.id;
+  let data = await Food.findOne({ where: { id: id } });
+  response.status(200).json(data);
 }
 
 async function createFood(request, response) {
-  try {
-    let data = request.body;
-    let newFood = await Food.create(data);
-    response.status(201).json(newFood);
-  } catch (error) {
-    response.status(500).json({ error: error.message });
-  }
+  let data = request.body;
+  let newFood = await Food.create(data);
+  response.status(201).json(newFood);
 }
 
 async function updateFood(request, response) {
-  // Implement your updateFood handler logic here
+  let id = request.params.id;
+  let data = request.body;
+  let food = await Food.findOne({ where: { id: id } });
+  let updatedFood = await food.update(data);
+  response.status(200).json(updatedFood);
 }
 
 async function deleteFood(request, response) {
-  // Implement your deleteFood handler logic here
+  let id = request.params.id;
+  let deletedFood = await Food.destroy({ where: { id: id } });
+  if (typeof deletedFood === 'number') {
+    response.status(204).send(null);
+  } else {
+    throw new Error('Error deleting record');
+  }
 }
+
+// Example route handler for the default food route
+router.get('/', (req, res) => {
+  res.send('Food route');
+});
 
 module.exports = router;
