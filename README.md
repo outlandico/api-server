@@ -10,3 +10,7 @@ What was your key takeaway? How this can be a big ol' spiderweb if you are not p
 https://github.com/outlandico/api-server/pull/4
 
 Share the link to their PR request. I will have to ask them tomorrow.
+
+Corrected the
+server but
+1 error remains
