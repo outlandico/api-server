@@ -1,55 +1,64 @@
 'use strict';
 
+// All routing and data management for "people"
+
 const express = require('express');
 const router = express.Router();
-const { Food } = require('../models/index.js');
 
-// RESTful route definitions for "food"
-router.get('/food', getFood);
-router.get('/food/:id', getOneFood);
-router.post('/food', createFood);
-router.put('/food/:id', updateFood);
-router.delete('/food/:id', deleteFood);
+const {Food, Entertainment} = require('../models/index.js');
 
-// Route handlers for "food" CRUD operations
-async function getFood(request, response) {
-  let data = await Food.findAll();
+const Model = Food;
+
+// RESTful route definitions
+router.get('/', getAll);
+router.get('/:id', getOne);
+router.post('/', createRecord);
+router.put('/:id', updateRecord);
+router.delete('/:id', deleteRecord);
+
+// ROUTE HANDLERS
+async function getAll( request, response ) {
+  let data = await Model.read(null, {
+    include: {
+      model: Entertainment.model,
+    },
+  });
   response.status(200).json(data);
 }
 
-async function getOneFood(request, response) {
+async function getOne( request, response ) {
   let id = request.params.id;
-  let data = await Food.findOne({ where: { id: id } });
+  let data = await Model.read(id, {
+    include: {
+      model: Entertainment.model,
+    },
+  });
   response.status(200).json(data);
 }
 
-async function createFood(request, response) {
+async function createRecord( request, response ) {
   let data = request.body;
-  let newFood = await Food.create(data);
-  response.status(201).json(newFood);
+  let newRecord = await Model.create(data);
+  response.status(201).json(newRecord);
 }
 
-async function updateFood(request, response) {
+async function updateRecord( request, response ) {
   let id = request.params.id;
   let data = request.body;
-  let food = await Food.findOne({ where: { id: id } });
-  let updatedFood = await food.update(data);
-  response.status(200).json(updatedFood);
+  let updatedRecord = await Model.update(id, data);
+  response.status(200).json(updatedRecord);
 }
 
-async function deleteFood(request, response) {
+async function deleteRecord( request, response ) {
   let id = request.params.id;
-  let deletedFood = await Food.destroy({ where: { id: id } });
-  if (typeof deletedFood === 'number') {
+  let deletedRecord = await Model.delete(id);
+  if ( typeof deletedRecord === 'number' ) {
     response.status(204).send(null);
   } else {
     throw new Error('Error deleting record');
   }
 }
 
-// Example route handler for the default food route
-router.get('/', (req, res) => {
-  res.send('Food route');
-});
+
 
 module.exports = router;

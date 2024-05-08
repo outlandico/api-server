@@ -1,55 +1,65 @@
 'use strict';
 
+// All routing and data management for "entertainment"
+
 const express = require('express');
 const router = express.Router();
-const { Entertainment } = require('../models/index.js');
 
-// Example route handler for the default entertainment route
-router.get('/', (req, res) => {
-  res.send('Entertainment route');
-});
+const { Food, Entertainment } = require('../models/index.js');
 
-// RESTful route definitions for "entertainment"
-router.get('/entertainment', getEntertainment);
-router.get('/entertainment/:id', getOneEntertainment);
-router.post('/entertainment', createEntertainment);
-router.put('/entertainment/:id', updateEntertainment);
-router.delete('/entertainment/:id', deleteEntertainment);
+const Model = Entertainment; // Changed the Model to Entertainment
 
-// Route handlers for "entertainment" CRUD operations
-async function getEntertainment(request, response) {
-  let data = await Entertainment.findAll();
+// RESTful route definitions
+router.get('/', getAll);
+router.get('/:id', getOne);
+router.post('/', createRecord);
+router.put('/:id', updateRecord);
+router.delete('/:id', deleteRecord);
+
+// ROUTE HANDLERS
+async function getAll( request, response ) {
+  let data = await Model.read(null, {
+    include: {
+      model: Food.model,
+    },
+  });
   response.status(200).json(data);
 }
 
-async function getOneEntertainment(request, response) {
+async function getOne( request, response ) {
   let id = request.params.id;
-  let data = await Entertainment.findOne({ where: { id: id } });
+  let data = await Model.read(id, {
+    include: {
+      model: Food.model,
+    },
+  });
   response.status(200).json(data);
 }
 
-async function createEntertainment(request, response) {
+async function createRecord( request, response ) {
   let data = request.body;
-  let newEntertainment = await Entertainment.create(data);
-  response.status(201).json(newEntertainment);
+  let newRecord = await Model.create(data);
+  response.status(201).json(newRecord);
 }
 
-async function updateEntertainment(request, response) {
+async function updateRecord( request, response ) {
   let id = request.params.id;
   let data = request.body;
-  let entertainment = await Entertainment.findOne({ where: { id: id } });
-  let updatedEntertainment = await entertainment.update(data);
-  response.status(200).json(updatedEntertainment);
+  let updatedRecord = await Model.update(id, data);
+  response.status(200).json(updatedRecord);
 }
 
-async function deleteEntertainment(request, response) {
+async function deleteRecord( request, response ) {
   let id = request.params.id;
-  let deletedEntertainment = await Entertainment.destroy({ where: { id: id } });
-  if (typeof deletedEntertainment === 'number') {
+  let deletedRecord = await Model.delete(id);
+  if ( typeof deletedRecord === 'number' ) {
     response.status(204).send(null);
   } else {
     throw new Error('Error deleting record');
   }
 }
 
+
+
 module.exports = router;
+
