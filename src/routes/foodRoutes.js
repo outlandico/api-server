@@ -1,6 +1,6 @@
 'use strict';
 
-// All routing and data management for "people"
+// All routing and data management for "food"
 
 const express = require('express');
 const router = express.Router();
