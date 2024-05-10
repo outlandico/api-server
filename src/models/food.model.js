@@ -15,7 +15,7 @@ const Food = (sequelize, DataTypes) => {
       type: DataTypes.STRING,
       allowNull: false,
     },
-    entertainmentId: {
+    entertainmentid: {
       type: DataTypes.INTEGER,
       allowNull: false,
     },
