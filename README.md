@@ -7,10 +7,8 @@
 Who was your partner? Evan, Ryan
 What was your key takeaway? How this can be a big ol' spiderweb if you are not paying attention
 
-https://github.com/outlandico/api-server/pull/4
+[Github Pull]!(<https://github.com/outlandico/api-server/pull/10>)
 
 Share the link to their PR request. I will have to ask them tomorrow.
 
-Corrected the
-server but
-1 error remains
+Corrected the "entertainmentid"
